@@ -1,22 +1,29 @@
 <template lang="pug">
 
 .home
-    form-component(
-        v-model="inputs"
-    )
-        form-collection-component(
-            name="auction"
+    div
+        span {{ counter }}
+        auction-collection(
+            :inn.sync="fields.inn"
+            :kpp.sync="fields.kpp"
+            @updateCounter="counter = $event"
         )
-            form-field-component(
-                v-for="(value, name) in fields"
-                :key="name"
-                :name="name"
-                :value="fields[name]"
-            )
-                input-component(
-                    v-model="fields[name]"
-                    v-bind="appearance[name]"
-                )
+    //form-component(
+    //    @changeField="onChangeFields"
+    //)
+    //    form-collection-component(
+    //        name="auction"
+    //    )
+    //        form-field-component(
+    //            v-for="(value, name) in fields"
+    //            :key="name"
+    //            :name="name"
+    //            :value="fields[name]"
+    //        )
+    //            input-component(
+    //                v-model="fields[name]"
+    //                v-bind="appearance[name]"
+    //            )
 
 </template>
 
@@ -27,9 +34,11 @@ import FormCollection from "@/shared/ui/FormCollection.vue"
 import Form from "@/shared/ui/Form.vue"
 import Input from "@/shared/ui/Input.vue"
 import FormField from "@/shared/ui/FormField.vue"
+import AuctionCollection from "@/shared/ui/auctionCollection"
 
 @Component({
     components: {
+        AuctionCollection,
         'form-field-component': FormField,
         "form-component": Form,
         "form-collection-component": FormCollection,
@@ -45,6 +54,18 @@ export default class HomeView extends Vue {
     }
 
     inputs = null
+    counter = {
+        fill: 0,
+        all: 1
+    }
+
+    // onChangeCounter(counter: HomeView['counter']) {
+    //     this.counter = counter
+    // }
+
+    beforeUpdate() {
+        console.log('beforeUpdate HomeView')
+    }
 
     appearance = {
         inn: {

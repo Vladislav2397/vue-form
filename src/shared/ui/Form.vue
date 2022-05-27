@@ -7,11 +7,22 @@ form.form
 </template>
 
 <script lang="ts">
-import { Component, ProvideReactive, VModel, Vue } from "vue-property-decorator"
+import {
+    Component,
+    Emit,
+    ProvideReactive,
+    VModel,
+    Vue
+} from "vue-property-decorator"
 
 @Component
 export default class Form extends Vue {
     @VModel() valueModel!: any
+
+    @Emit('changeField')
+    changeField(collections: Record<string, unknown>) {
+        return collections
+    }
 
     @ProvideReactive('collections') collections: Record<string, unknown> = Vue.observable({
         //
@@ -19,7 +30,7 @@ export default class Form extends Vue {
 
     updated() {
         console.log('Form.updated')
-        this.valueModel = this.collections
+        this.changeField(this.collections)
     }
 }
 </script>
