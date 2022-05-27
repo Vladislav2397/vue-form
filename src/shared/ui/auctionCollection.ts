@@ -9,8 +9,6 @@ let oldCounter = {
 export default {
     functional: true,
     render(h: CreateElement, { props, listeners }: RenderContext) {
-        console.log('render collections')
-
         const fields = {
             inn: {
                 value: props.inn,
@@ -33,7 +31,6 @@ export default {
                 }, 0)
             }
 
-            console.log(oldCounter, counter)
             if (oldCounter.all !== counter.all || oldCounter.fill !== counter.fill) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
@@ -44,6 +41,20 @@ export default {
             oldCounter = {
                 ...counter
             }
+        }
+
+        const checkCounter = () => ({
+            all: entries.length,
+            fill: entries.reduce((total, [, field]) => {
+                return total + +!!field.value
+            }, 0)
+        })
+
+        if (listeners?.validateFn && !Array.isArray(listeners?.validateFn)) {
+            console.log(listeners?.validateFn)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            listeners?.validateFn(checkCounter)
         }
 
         const renderChildren = () => Object.entries(fields).map(([ key, field ]) => {

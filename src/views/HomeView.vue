@@ -7,6 +7,7 @@
             :inn.sync="fields.inn"
             :kpp.sync="fields.kpp"
             @updateCounter="counter = $event"
+            @validateFn="setValidateFn"
         )
     //form-component(
     //    @changeField="onChangeFields"
@@ -51,6 +52,13 @@ export default class HomeView extends Vue {
         kpp: '',
         ogrn: '',
         okpo: '',
+    }
+
+    validateFn: (() => void) | null = null
+
+    setValidateFn(cb: any) {
+        console.log('setValidateFn')
+        this.validateFn = cb
     }
 
     inputs = null
