@@ -25,6 +25,12 @@ const routes: Array<RouteConfig> = [
         component: () =>
             import(/* webpackChunkName: "about" */ "../views/OrmView.vue"),
     },
+    {
+        path: '/messages',
+        name: 'messages',
+        component: () =>
+            import(/* webpackChunkName: "about" */ "../views/Messages.vue"),
+    },
 ]
 
 const router = new VueRouter({

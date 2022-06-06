@@ -2,7 +2,10 @@
 
 .orm
     p {{ groups }}
-    p {{ messages }}
+    p
+        p(
+            v-for="message in messages"
+        ) {{ message.text }} {{ message.id }} {{ message.uid }}
     button(
         @click="onClick"
     ) Button
@@ -72,38 +75,25 @@ export default class OrmView extends Vue {
             },
             {
                 date: '02062022',
-                // messages: [
-                //     3, 4
-                // ]
+                messages: [
+                    {
+                        id: 3,
+                        text: 'third message',
+                        time: '14:16',
+                        files: [],
+                        group: '02062022'
+                    },
+                ]
             }
         ]
         Group.insert({ data: groups })
-
-        // const posts = {
-        //     id: 1,
-        //     title: 'title',
-        //     body: 'body',
-        //     comments: [
-        //         {
-        //             id: 1,
-        //             post_id: 1,
-        //             body: 'some body',
-        //         },
-        //         {
-        //             id: 2,
-        //             post_id: 1,
-        //             body: 'some body 2',
-        //         },
-        //     ]
-        // }
-        //
-        // Post.insert({ data: posts })
     }
 
     get groups() {
-        const found = Group.find('02062022')
-
-        return found?.$toJson()
+        return Group
+            .query()
+            .with('messages')
+            .find('02062022')
     }
 
     get messages() {
@@ -111,17 +101,10 @@ export default class OrmView extends Vue {
     }
 
     onClick() {
-        Message.insert({
+        Message.update({
+            where: message => message.id === 3,
             data: {
-                ...Message.find(4),
                 id: 5,
-            }
-        })
-
-        Group.update({
-            where: '02062022',
-            data: {
-                messages: [3, 5],
             }
         })
     }
