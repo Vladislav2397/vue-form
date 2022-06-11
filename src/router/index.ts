@@ -31,6 +31,11 @@ const routes: Array<RouteConfig> = [
         component: () =>
             import(/* webpackChunkName: "about" */ "../views/Messages.vue"),
     },
+    {
+        path: '/collapse',
+        name: 'collapse',
+        component: () => import('../views/Clps/Clps.vue')
+    }
 ]
 
 const router = new VueRouter({
