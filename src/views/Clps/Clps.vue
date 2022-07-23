@@ -1,7 +1,7 @@
 <template lang="pug">
 
 .clps
-    c-collapse-2(
+    c-collapse(
         title="Title"
     )
         p Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -10,11 +10,15 @@
         button(
             @click="isOpen = !isOpen"
         ) Toggle
-        template(
-            v-if="isOpen"
+        transition(
+            name="fade"
+            mode="out-in"
         )
-            p Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            p Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            template(
+                v-if="isOpen"
+            )
+                p Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    | Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 
 </template>
 

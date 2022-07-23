@@ -1,53 +1,85 @@
-<template lang="pug">
-
-.form-collection
-    slot
-
-</template>
-
 <script lang="ts">
-import {
-    Component,
-    InjectReactive,
-    Prop,
-    ProvideReactive,
-    Vue
-} from "vue-property-decorator"
+import { CreateElement, VNode } from "vue"
+import { Component, Emit, Prop, Vue } from "vue-property-decorator"
 
 @Component
 export default class FormCollection extends Vue {
-    @Prop() readonly name!: string
-
-    @ProvideReactive('fields') fields: Record<string, unknown> = {}
-
-    @InjectReactive('collections') collections!: Record<string, unknown>
-
-    updated() {
-        console.log('FormCollection.updated')
-        this.$set(this.collections, this.name, {
-            counter: this.counter(),
-            fields: this.fields
-        })
+    @Emit('input') inputEmit() {
+        return this.state
     }
 
-    mounted() {
-        // this.$set(this.collections, this.name, {
-        //     counter: this.counter,
-        //     fields: this.fields
-        // })
-        // this.collections[this.name] = {
-        //     counter: this.counter,
-        //     fields: this.fields
-        // }
+    // @Prop() readonly name!: string
+    @Prop() readonly value!: Record<string, unknown>
+
+    created() {
+        console.log('name & value', this.$attrs.name, this.value)
+
+        this.state = { ...this.value }
     }
 
-    counter() {
-        const entries = Object.entries(this.fields)
+    state = {}
 
-        return {
-            all: entries.length,
-            fill: entries.reduce((total, [key, value]) => total + +!!value, 0),
-        }
+    get filteredSlots(): VNode[] {
+        return (this.$slots?.default as VNode[])?.filter(slot => slot.tag)
+    }
+
+    render(h: CreateElement): VNode {
+        return h('section', [
+            h('p', [JSON.stringify(this.state)]),
+
+            ...this.filteredSlots?.map(slot => {
+                console.log(slot)
+
+                if (slot.componentOptions?.propsData && slot.data?.attrs?.name) {
+                    // @ts-ignore
+                    slot.componentOptions.propsData.value =
+                        // @ts-ignore
+                        this.state[slot.data.attrs.name ?? '']
+                }
+
+                if (slot.componentOptions) {
+                    if (!slot.componentOptions.listeners) {
+                        slot.componentOptions.listeners = {}
+                    }
+                }
+
+                if (slot.componentOptions) {
+                    if (slot.componentOptions.listeners) {
+                        const listeners = slot.componentOptions.listeners
+
+                        const onInput = (value: string) => {
+                            // @ts-ignore
+                            this.state[slot.data.attrs.name] = value
+
+                            this.inputEmit()
+                        }
+
+                        // @ts-ignore
+                        if (listeners['input']) {
+                            // @ts-ignore
+                            if (Array.isArray(listeners?.['input'])) {
+                                // @ts-ignore
+                                slot.componentOptions.listeners['input'].push(onInput)
+                            } else {
+                                // @ts-ignore
+                                slot.componentOptions.listeners['input'] = [
+                                    // @ts-ignore
+                                    listeners['input'],
+                                    onInput
+                                ]
+                            }
+                        } else {
+                            // @ts-ignore
+                            slot.componentOptions.listeners['input'] = [
+                                onInput
+                            ]
+                        }
+                    }
+                }
+
+                return slot
+            })
+        ])
     }
 }
 </script>

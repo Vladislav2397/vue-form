@@ -44,6 +44,7 @@ export default {
         console.log('beforeUpdate')
         if (this.wrapperRef && this.isOpen) {
             this.$nextTick(() => {
+                console.log('this.contentRef.getBoundingClientRect().height', this.contentRef.getBoundingClientRect().height)
                 this.wrapperRef.style.height = `${this.contentRef.getBoundingClientRect().height}px`
             })
         }
@@ -80,6 +81,12 @@ export default {
                 this.contentRef.style.opacity = '1'
             }, 200)
         },
+        // onAfterEnter(el) {
+        //     el.style.height = 'auto'
+        // },
+        // onBeforeLeave(el) {
+        //     el.style.height = `${this.contentRef.height}px`
+        // },
         onLeave(el) {
             this.height.computed = 0
 
@@ -127,7 +134,7 @@ export default {
 }
 
 .fade-enter, .fade-leave-to {
-    opacity: 0;  
+    opacity: 0;
 }
 
 .content {
