@@ -1,87 +1,62 @@
 <script lang="ts">
 import {
     Component,
-    Prop,
+    Provide,
+    ProvideReactive,
     VModel,
     Vue
 } from "vue-property-decorator"
-import { CreateElement, VNode } from "vue"
+import { CreateElement } from "vue"
+import { createOrUpdateObjectField } from "@/shared/lib/convert"
 
 @Component
 export default class Form extends Vue {
     @VModel() valueModel!: Record<string, unknown>
-    @Prop() readonly appearance!: Record<keyof Form["valueModel"], any>
+    // @Prop() readonly appearance!: Record<keyof Form["valueModel"], any>
 
-    state = {}
+    @ProvideReactive('$form') state = {}
+    @Provide('addFormCondition')
+    addFormCondition = (nameField: string, condition: [string, boolean]) => {
+        this.$set(this.conditions, nameField, condition)
+    }
 
-    isMounted = false
+    conditions = {}
+    cache = {}
 
     created() {
         this.state = { ...this.valueModel }
     }
 
     mounted() {
-        this.isMounted = true
+        Object.entries(this.conditions).forEach(([name, condition]) => {
+            // @ts-ignore
+            this.$watch(`state.${condition[0]}`, (n, o) => {
+                // @ts-ignore
+                console.log(condition[0])
+
+                // @ts-ignore
+                if (!!n !== condition[1]) {
+                    this.cache = { ...this.state }
+
+                    // @ts-ignore
+                    createOrUpdateObjectField(this.state, condition[0], undefined)
+                } else {
+                    // @ts-ignore
+                    createOrUpdateObjectField(this.state, condition[0], createOrUpdateObjectField(this.cache, condition[0]))
+                }
+            })
+        })
     }
 
-    get filteredSlots(): VNode[] {
-        return (this.$slots?.default as VNode[])?.filter(slot => slot.tag)
-    }
+    // beforeMount() {
+    //     this.state = { ...this.valueModel }
+    // }
 
     render(h: CreateElement) {
         return h('form', { class: 'form' }, [
-            h('p', [JSON.stringify(this.state)]),
+            // h('p', [JSON.stringify(this.state)]),
 
-            ...this.filteredSlots?.map(slot => {
-                console.log(slot)
-
-                if (slot.componentOptions?.propsData && slot.data?.attrs?.name) {
-                    // @ts-ignore
-                    slot.componentOptions.propsData.value =
-                        // @ts-ignore
-                        this.state[slot.data.attrs.name ?? '']
-                }
-
-                if (slot.componentOptions) {
-                    if (!slot.componentOptions.listeners) {
-                        slot.componentOptions.listeners = {}
-                    }
-                }
-
-                if (slot.componentOptions) {
-                    if (slot.componentOptions.listeners) {
-                        const listeners = slot.componentOptions.listeners
-
-                        const onInput = (value: string) => {
-                            // @ts-ignore
-                            this.state[slot.data.attrs.name] = value
-                        }
-
-                        // @ts-ignore
-                        if (listeners['input']) {
-                            // @ts-ignore
-                            if (Array.isArray(listeners?.['input'])) {
-                                // @ts-ignore
-                                slot.componentOptions.listeners['input'].push(onInput)
-                            } else {
-                                // @ts-ignore
-                                slot.componentOptions.listeners['input'] = [
-                                    // @ts-ignore
-                                    listeners['input'],
-                                    onInput
-                                ]
-                            }
-                        } else {
-                            // @ts-ignore
-                            slot.componentOptions.listeners['input'] = [
-                                onInput
-                            ]
-                        }
-                    }
-                }
-
-                return slot
-            })
+            this.$slots?.default,
         ])
     }
 }

@@ -1,33 +1,43 @@
 <template lang="pug">
 
 .home
+    p {{ fields }}
     b-form(
         v-model="fields"
-        :appearance="appearance"
     )
         p Наименование
-        b-input(
+        b-form-input(
             name="name"
             :label="appearance.name.label"
             :placeholder="appearance.name.placeholder"
         )
-        b-input(
-            name="email"
-            :label="appearance.email.label"
-            :placeholder="appearance.email.placeholder"
+        label
+            input(
+                type="checkbox"
+                v-model="isShow"
+            )
+            | Some input
+        template(
+            v-if="isShow"
         )
+            b-form-input(
+                name="email"
+                :label="appearance.email.label"
+                :placeholder="appearance.email.placeholder"
+            )
         b-form-collection(
             name="address"
         )
-            b-input(
+            b-form-input(
                 name="country"
                 placeholder="Введите страну"
             )
-            b-input(
+            b-form-input(
                 name="city"
                 placeholder="Введите город"
+                :condition="[ 'address.country', true ]"
             )
-            b-input(
+            b-form-input(
                 name="house"
                 placeholder="Введите номер дома"
             )
@@ -41,13 +51,14 @@ import FormCollection from "@/shared/ui/FormCollection.vue"
 import Form from "@/shared/ui/Form.vue"
 import Input from "@/shared/ui/Input.vue"
 import FormField from "@/shared/ui/FormField.vue"
+import FormInput from "@/shared/ui/FormInput"
 
 @Component({
     components: {
         'form-field-component': FormField,
         'b-form': Form,
         'b-form-collection': FormCollection,
-        'b-input': Input,
+        'b-form-input': FormInput,
     }
 })
 export default class HomeView extends Vue {
@@ -60,6 +71,8 @@ export default class HomeView extends Vue {
             house: '3',
         }
     }
+
+    isShow = true
 
     appearance = {
         name: {

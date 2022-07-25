@@ -10,14 +10,35 @@ label.input
 </template>
 
 <script lang="ts">
-import { Component, Prop, VModel, Vue } from "vue-property-decorator"
+import {
+    Component,
+    Prop,
+    VModel,
+    Vue
+} from "vue-property-decorator"
 
 @Component
-export default class FormCollection extends Vue {
+export default class Input extends Vue {
     @VModel() valueModel!: string
+
+    // @InjectReactive('$form') $form!: Record<string, any>
 
     @Prop() readonly placeholder!: string
     @Prop() readonly label!: string
+
+    // onInput(event: InputEvent) {
+    //     if (this.$form) {
+    //         // @ts-ignore
+    //         this.$set(this.$form, this.$attrs.name, event.target?.value)
+    //     }
+    // }
+
+    // created() {
+    //     if (this.$form[this.$attrs.name]) {
+    //         console.log('default value', this.$form[this.$attrs.name])
+    //         this.valueModel = this.$form[this.$attrs.name]
+    //     }
+    // }
 }
 </script>
 
